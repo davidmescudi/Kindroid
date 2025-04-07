@@ -59,6 +59,17 @@ pip install -r requirements.txt
 
 If you dont want to install the development dependencies just comment out all packages under `# Development dependencies` in the `requirements.txt`
 
+## Hardware List
+
+| Component | Description | Recommended Model |
+|-----------|-------------|------------------|
+| Camera | For QR code detection and visual interaction | [Placeholder] |
+| Microphone | For speech recognition | [Placeholder] |
+| Speaker | For text-to-speech output | [Placeholder] |
+| Thermal Printer | For printing responses and information | [Placeholder] |
+| Display | For visual feedback and interface | [Placeholder] |
+| Microcontroller | For running the Kindroid software | [Placeholder] |
+
 ## Usage
 
 [Usage instructions will be added here]
