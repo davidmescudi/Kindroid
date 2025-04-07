@@ -2,8 +2,8 @@
 LLM module for handling language model interactions using LM Studio.
 """
 from typing import Optional, Dict, Any, List
-from lmstudio import LMStudio
-from lmstudio.types import Message, Role
+import httpx
+from lmstudio import Client, UserMessage, AssistantResponse, SystemPrompt
 
 from ..core.base import HardwareModule
 
@@ -18,17 +18,17 @@ class LLMModule(HardwareModule):
         self.temperature = self.config.get('temperature', 0.7)
         self.max_tokens = self.config.get('max_tokens', 1000)
         self.system_prompt = self.config.get('system_prompt', '')
-        self.conversation_history: List[Message] = []
-        self.lm_studio = None
+        self.conversation_history: List[Any] = []
+        self.client = None
     
     def initialize(self) -> bool:
         """Initialize the LLM module."""
         try:
             # Initialize LM Studio client
-            self.lm_studio = LMStudio(base_url=self.api_url)
+            self.client = Client(api_host=self.api_url)
             
             # Test connection by getting available models
-            models = self.lm_studio.models.list()
+            models = self.client.list_loaded_models()
             if len(models) > 0:
                 # If model not specified or not available, use first available model
                 if self.model == 'local-model' or self.model not in [m.id for m in models]:
@@ -44,7 +44,9 @@ class LLMModule(HardwareModule):
         """Shutdown the LLM module."""
         self.is_initialized = False
         self.conversation_history.clear()
-        self.lm_studio = None
+        if self.client:
+            self.client.close()
+        self.client = None
         return True
     
     def get_status(self) -> dict:
@@ -70,17 +72,17 @@ class LLMModule(HardwareModule):
         
         try:
             # Add user message to history
-            user_message = Message(role=Role.USER, content=user_input)
+            user_message = UserMessage(content=user_input)
             self.conversation_history.append(user_message)
             
             # Prepare the messages list with system prompt
             messages = []
             if self.system_prompt:
-                messages.append(Message(role=Role.SYSTEM, content=self.system_prompt))
+                messages.append(SystemPrompt(content=self.system_prompt))
             messages.extend(self.conversation_history)
             
             # Generate completion using LM Studio client
-            response = self.lm_studio.chat.completions.create(
+            response = self.client.llm.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 temperature=self.temperature,
@@ -105,9 +107,9 @@ class LLMModule(HardwareModule):
         """
         Update LLM settings.
         Args:
-            **kwargs: Settings to update (temperature, max_tokens, system_prompt, model)
+            **kwargs: Settings to update (temperature, max_tokens, etc.)
         Returns:
-            True if successful, False otherwise
+            True if settings were updated successfully
         """
         try:
             if 'temperature' in kwargs:
@@ -117,13 +119,7 @@ class LLMModule(HardwareModule):
             if 'system_prompt' in kwargs:
                 self.system_prompt = str(kwargs['system_prompt'])
             if 'model' in kwargs:
-                # Verify model exists
-                models = self.lm_studio.models.list()
-                if kwargs['model'] in [m.id for m in models]:
-                    self.model = str(kwargs['model'])
-                else:
-                    print(f"Model {kwargs['model']} not available")
-                    return False
+                self.model = str(kwargs['model'])
             return True
         except Exception as e:
             print(f"Error updating settings: {e}")
@@ -135,7 +131,7 @@ class LLMModule(HardwareModule):
     
     def list_available_models(self) -> List[str]:
         """
-        Get list of available models from LM Studio.
+        Get a list of available models.
         Returns:
             List of model IDs
         """
@@ -143,7 +139,7 @@ class LLMModule(HardwareModule):
             raise RuntimeError("LLM module not initialized")
         
         try:
-            models = self.lm_studio.models.list()
+            models = self.client.list_loaded_models()
             return [model.id for model in models]
         except Exception as e:
             print(f"Error listing models: {e}")
