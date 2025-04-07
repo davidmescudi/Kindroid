@@ -1,7 +1,6 @@
 # Core dependencies
 numpy>=1.24.0
 opencv-python>=4.8.0
-pyrealsense2>=2.54.1.5153
 pyserial>=3.5
 pyaudio>=0.2.11
 SpeechRecognition>=3.8.1
