@@ -1,9 +1,9 @@
 <div align="center">
 
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/davidmescudi/Kindroid/refs/heads/main/images/logo_dark.svg?token=GHSAT0AAAAAADATBZWOZM3Z3GRASCY3JN6QZ7UGMXQ">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/davidmescudi/Kindroid/refs/heads/main/images/logo_light.svg?token=GHSAT0AAAAAADATBZWPWJTLEZHUXKUSQESAZ7UGMPQ">
-    <img alt="kindroid logo" src="https://raw.githubusercontent.com/davidmescudi/Kindroid/refs/heads/main/images/logo_light.svg?token=GHSAT0AAAAAADATBZWPWJTLEZHUXKUSQESAZ7UGMPQ" height="200" style="max-width: 100%;">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/davidmescudi/Kindroid/refs/heads/main/images/logo_dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/davidmescudi/Kindroid/refs/heads/main/images/logo_light.svg">
+    <img alt="kindroid logo" src="https://raw.githubusercontent.com/davidmescudi/Kindroid/refs/heads/main/images/logo_light.svg" height="200" style="max-width: 100%;">
   </picture>
 
 ### Kindroid (from English 'kind', German 'Kind' [child] + 'droid')
@@ -75,5 +75,10 @@ If you dont want to install the development dependencies just comment out all pa
 [Usage instructions will be added here]
 
 ## License
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0). See the [LICENSE](LICENSE) file for the full license text.
 
-[License information will be added here]
+**Non-Commercial Use:** You are free to share and adapt the material for noncommercial purposes, provided you give appropriate credit and include the [LICENSE](LICENSE) file.
+
+**Commercial Use:** Any use that is primarily intended for or directed toward commercial advantage or monetary compensation is strictly prohibited without explicit prior written permission from the copyright holder.
+
+**Use in Other Open Source Projects:** If you wish to incorporate Kindroid into another open-source software project, please contact the copyright holder. Permission may be granted, potentially under a different license (e.g., MIT or Apache 2.0), contingent upon a mutually agreed-upon contribution back to the Kindroid project (such as significant code contributions, bug fixes, or feature development). We encourage you to discuss this *before* starting integration.
