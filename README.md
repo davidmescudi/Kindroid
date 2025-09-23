@@ -14,28 +14,33 @@ An interactive robot hardware platform for pediatric healthcare. Integrates LLM-
 
 ## Installation
 
-Kindroid requires Python 3.11 and uses a combination of conda and pip for package management. Some packages with complex binary dependencies are best installed through conda, while others work well with pip.
-
 ### Prerequisites
 
-- [Anaconda](https://www.anaconda.com/download) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 - Python 3.11
 - Git
 
 #### System Dependencies
 
-##### macOS
+##### macOS (only in test mode)
 Install [Homebrew](https://brew.sh/) and then run:
 ```bash
 brew install zbar
 brew install portaudio
 ```
 
-##### Linux (Ubuntu/Debian)
+##### Linux (Raspberry Pi OS)
 ```bash
 sudo apt-get update
 sudo apt-get install -y libzbar0 portaudio19-dev
 ```
+
+If you are using a brand-new flashed Raspberry Pi, you will also need to enable some features on the Pi itself. Type:
+`sudo raspi-config`
+Inside the menu that opens up, do the following:
+1. Select **3. Interface Options**.
+2. Select **I6 Serial Port**.
+3. For the question *Would you like a login shell to be accessible over serial?*, select **No**.
+4. For the question *Would you like the serial port hardware to be enabled?*, select **Yes**.
 
 ### Quick Installation
 
@@ -43,23 +48,20 @@ sudo apt-get install -y libzbar0 portaudio19-dev
 git clone https://github.com/davidmescudi/Kindroid.git
 cd Kindroid
 
-# Create and activate conda environment
-conda create -n kindroid python=3.11
-conda activate kindroid
+# Create and activate virtual environment
+python -m venv kindroid --system-site-packages
+source kindroid/bin/activate
 
-# Install conda dependencies
-conda install -c conda-forge numpy opencv pyaudio pillow
+# Pipecat dependencies, logging, http and environment variables
+pip install "pipecat-ai[openai,silero,local]" pipecat-ai-flows loguru python-dotenv aiohttp PyYAML gpiozero pygame
 
-# Install the Kindroid package in development mode
-pip install -e .
-
-# Install additional pip dependencies
-pip install -r requirements.txt
+# Raspberry Pi camera dependencies. Only works on Raspberry Pi.
+pip install picamera2 pyzbar numpy
 ```
 
-If you dont want to install the development dependencies just comment out all packages under `# Development dependencies` in the `requirements.txt`
+Make sure that a `.env` file with the correct `OPENAI_API_KEY = <your openai api key>` is present. For configuration purposes, e.g., which microphone, speaker, printer, and camera should be used, see the `config/agent_config.yaml`. Important: You also need to configure the correct `monkey_id` in `config/agent_config.yaml`, which the robot uses to communicate with the backend.
 
-## Hardware List
+## Hardware Requirements
 
 | Component | Description | Recommended Model |
 |-----------|-------------|------------------|
@@ -72,7 +74,10 @@ If you dont want to install the development dependencies just comment out all pa
 
 ## Usage
 
-[Usage instructions will be added here]
+As pipecat is hijacking the `SIGINT` signal from the terminal, pressing `CTRL + C` will only kill the pipecat pipeline, not the whole script. To exit out of the whole script (and get your terminal back), hit `CTRL + \`. Keep in mind that `CTRL + \` only works on most Unix-based systems (e.g., macOS, Ubuntu).
+
+### Autostart on Boot
+The `setup_autostart_service.sh` script can be used to configure this project to start automatically when the system boots.
 
 ## License
 This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0). See the [LICENSE](LICENSE) file for the full license text.

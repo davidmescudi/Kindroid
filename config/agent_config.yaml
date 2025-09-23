@@ -1,0 +1,31 @@
+monkey_id: 4
+
+button_pin: 26
+
+printer:
+  device_path: "/dev/ttyAMA0"
+
+camera:
+  device_id: 0
+
+speaker:
+  device_name: "MacBook Pro Speakers" # "hw:3,0"
+  device_id: 0
+
+microphone:
+  device_name: "MacBook Pro Microphone" # "hw:2,0"
+  device_id: 0
+
+apis:
+  base_url: "http://10.163.181.208:7000/" # Change to your backend URL
+  locations_url: "v1/monkeys/locations" # Backend URL for locations GET
+  directions_url: "v1/monkeys/4/navigation" # Backend URL for directions qrcode und description POST
+  qr_code_process_url: "v1/monkeys/4/qr-check" # Backend URL for QR code processing POST
+  interaction_started: "v1/monkeys/4/button-press" # Journey id POST
+  banana_return: "v1/monkeys/4/banana-return" # Banana return POST
+
+vad_settings:
+  confidence: 0.9 # Default is 0.7
+  start_secs: 0.4 # Default is 0.2
+  stop_secs: 0.8 # Default is 0.8
+  min_volume: 0.7 # Default is 0.6
