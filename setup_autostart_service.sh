@@ -6,10 +6,10 @@ set -e
 # --- Configuration ---
 SERVICE_NAME="kindroid.service"
 SERVICE_FILE_PATH="/etc/systemd/system/$SERVICE_NAME"
-PYTHON_EXEC="[REPLACE_WITH_ACTUAL_PATH]/kindroid/bin/python"
-SCRIPT_PATH="[REPLACE_WITH_ACTUAL_PATH]/kindroid/main_gpio.py"
-WORKING_DIR="[REPLACE_WITH_ACTUAL_PATH]/kindroid/"
-USER_NAME="[REPLACE_WITH_ACTUAL_USERNAME]"
+PYTHON_EXEC="/home/david/monkey_project/pipecat-new/kindroid/bin/python"
+SCRIPT_PATH="/home/david/monkey_project/pipecat-new/main_gpio.py"
+WORKING_DIR="/home/david/monkey_project/pipecat-new/"
+USER_NAME="david"
 
 # Check if running as root
 if [ "$(id -u)" -ne 0 ]; then

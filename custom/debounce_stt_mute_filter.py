@@ -14,6 +14,7 @@ from pipecat.frames.frames import (
     UserStartedSpeakingFrame,
     UserStoppedSpeakingFrame,
     StartInterruptionFrame,
+    StopInterruptionFrame,
     FunctionCallInProgressFrame,
     FunctionCallResultFrame
 )
@@ -140,6 +141,7 @@ class DebouncedSTTMuteFilter(FrameProcessor):
             UserStartedSpeakingFrame,
             UserStoppedSpeakingFrame,
             StartInterruptionFrame,
+            StopInterruptionFrame,
         )
 
         if isinstance(frame, frames_to_suppress):

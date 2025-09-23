@@ -6,7 +6,7 @@ from loguru import logger
 from pipecat_flows import FlowArgs, FlowConfig, FlowResult
 import json
 
-from utils.printer import setup_printer, print_qr, feed_paper_lines, close_printer, print_text
+from utils.printer import setup_printer, print_qr, feed_paper_lines, close_printer, print_text, print_ice_cream
 from utils.camera import _scan_qr_code_sync
 from utils.config_loader import AppConfig
 
@@ -41,10 +41,8 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
                 if test:
                     locations = [{"id": 1, "name": "Haupteingang"}, {"id": 2, "name": "Optometrist"}, {"id": 3, "name": "Radiologie"}, {"id": 4, "name": "Notaufnahme"}, {"id": 149, "name": "Oncology"}]
                 else:
-                    eyes_controller.trigger_concentrate(indefinite=True)
                     locations_response = await client.get(app_config.apis["base_url"] + app_config.apis["locations_url"])
                     locations = locations_response.json()
-                    eyes_controller.stop_concentrate()
                 logger.debug(f"Received locations: {locations}")
 
                 target_location = None
@@ -80,13 +78,13 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
                     qr_code_data = description_data.get("qrCode", None)
             else:
                 description = f"Leider konnte ich keinen Ort namens '{destination}' finden. Bitte versuchen Sie es mit einem der folgenden Orte: " + ", ".join([loc['name'] for loc in locations]) + "."
-            
+
+            eyes_controller.trigger_smile(2000)  
             setup_printer()
             print_qr(json.dumps(qr_code_data))
             print_text(description)
             feed_paper_lines(15)
             close_printer()
-            eyes_controller.trigger_smile(2000)
             return WayDescriptionResult(description=description)
         except httpx.RequestError as e:
             logger.error(f"Error making API request: {e}")
@@ -104,10 +102,10 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
             if test:
                 qr_data = {"token": "205299c9467fcd596f3d629f99364602", "destinationId": 2, "journeyId": journey_id}
             else:
-                eyes_controller.trigger_concentrate(indefinite=True)
+                #TODO: Evlt. hier das preview der Kamera anzeigen lassen? Damit user sieht ob er den QR-Code richtig hält
+                eyes_controller.trigger_loading()
                 qr_data = await loop.run_in_executor(None, _scan_qr_code_sync) #{"token": "205299c9467fcd596f3d629f99364602", "destinationId": 2, "journeyId": journey_id}
-                eyes_controller.stop_concentrate()
-            #TODO: Add backend call to process the scanned QR code data and link it to the journey
+                eyes_controller.stop_loading()
             #qr_data = {'token': 'df35d46f3dc0322e20eab30698f7ad30', 'destinationId': 3, 'journeyId': 17}
             if qr_data:
                 async with httpx.AsyncClient() as client:
@@ -115,6 +113,14 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
                         if test:
                             qr_data = qr_data
                         else:
+                            if isinstance(qr_data, str):
+                                qr_data = json.loads(qr_data)
+                            else:
+                                qr_data = qr_data
+                            
+                            if isinstance(qr_data, str):
+                                qr_data = json.loads(qr_data)
+                            
                             qr_data = await client.post(app_config.apis["base_url"] + app_config.apis["qr_code_process_url"], json=qr_data)
                             qr_data = qr_data.json()
                     except httpx.RequestError as e:
@@ -122,6 +128,11 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
                         return ErrorResult(status="error", error="QR-Code konnte nicht an den Server gesendet werden.")
                     
                     eyes_controller.trigger_star(2000)
+                    #TODO: Print the banana ASCI art
+                    setup_printer()
+                    print_ice_cream()
+                    feed_paper_lines(15)
+                    close_printer()
                     return QRCodeResult(status="success", data=qr_data)
             else:
                 logger.warning("No QR code found during scan")
@@ -138,13 +149,13 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
                 "role_messages": [
                     {
                         "role": "system",
-                        "content": "Du bist ein hilfreicher Assistent. Deine Antworten werden in Audio umgewandelt, also vermeide bitte Sonderzeichen. Nutze die verfügbaren Funktionen, um dem Benutzer zu helfen.",
+                        "content": "Du bist Koko, ein fröhlicher Roboter-Affe in einem Gebäude. Deine Aufgabe ist es, Menschen zu helfen und sie aufzuheitern. Sprich einfach und freundlich. Ganz wichtig: Deine Antworten werden direkt in Sprache umgewandelt. Deshalb darfst du auf gar keinen Fall Emojis, Smileys oder andere Sonderzeichen (wie *, #, etc.) verwenden. Deine Antwort muss immer reiner, einfacher Text sein, der vorgelesen werden kann. Nutze die verfügbaren Funktionen, um dem Mensch zu helfen.",
                     }
                 ],
                 "task_messages": [
                     {
                         "role": "system",
-                        "content": "Begrüße den Benutzer und frage ihn, ob er eine Wegbeschreibung benötigt oder einen QR-Code scannen möchte. Warte auf seine Entscheidung, bevor du entweder `get_way_description` oder `scan_qr_code` verwendest.",
+                        "content": "Begrüße den Mensch fröhlich als Koko, der Roboter-Affe. Frage es, ob du ihm den Weg zu einem tollen Ort im Gebäude zeigen oder einen geheimen QR-Code für es scannen sollst. Warte auf die Antwort, bevor du `get_way_description` oder `scan_qr_code` aufrufst.",
                     }
                 ],
                 "functions": [
@@ -174,13 +185,22 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
                             "transition_to": "handle_choice",
                         },
                     },
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": "end_conversation",
+                            "description": "Beendet das Gespräch, wenn der Benutzer keine Hilfe benötigt oder sich verabschiedet.",
+                            "parameters": {"type": "object", "properties": {}},
+                            "transition_to": "end",
+                        },
+                    },
                 ],
             },
             "handle_choice": {
                 "task_messages": [
                     {
                         "role": "system",
-                        "content": "Der Benutzer hat eine Wahl getroffen. Frage ihn nach der Bereitstellung der Information, ob er noch etwas benötigt oder das Gespräch beenden möchte. Verwende `end_conversation`, wenn er fertig ist.",
+                        "content": "Eine Funktion hat eine Antwort im 'tool'-Kontext geliefert. Deine Aufgabe ist es jetzt, eine Antwort für den Benutzer zu formulieren. Beginne, indem du den Inhalt des 'description'-Feldes aus dem 'tool'-Resultat **exakt und wortwörtlich wiedergibst, ohne jegliche Änderung oder Hinzufügung.** Frage direkt im Anschluss daran, ob der Benutzer noch etwas braucht oder ob das Gespräch beendet werden soll. Verwende `end_conversation`, wenn der Benutzer fertig ist.",
                     }
                 ],
                 "functions": [
@@ -223,7 +243,7 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
                 "task_messages": [
                     {
                         "role": "system",
-                        "content": "Bedanke dich beim Benutzer und verabschiede dich.",
+                        "content": "Verabschiede dich auf eine lustige und herzliche Affen-Art vom Benutzer. Wünsche ihm noch ganz viel Spaß und einen schönen Tag.",
                     }
                 ],
                 "functions": [],
