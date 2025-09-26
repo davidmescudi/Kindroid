@@ -65,19 +65,20 @@ Make sure that a `.env` file with the correct `OPENAI_API_KEY = <your openai api
 
 | Component | Description | Recommended Model |
 |-----------|-------------|------------------|
-| Camera | For QR code detection and visual interaction | [Placeholder] |
-| Microphone | For speech recognition | [Placeholder] |
-| Speaker | For text-to-speech output | [Placeholder] |
-| Thermal Printer | For printing responses and information | [Placeholder] |
+| Camera | For QR code detection and visual interaction | [Raspberry Pi Camera Module 3](https://www.raspberrypi.com/products/camera-module-3/) |
+| Microphone | For speech recognition | [ReSpeaker Lite](https://www.seeedstudio.com/ReSpeaker-Lite-p-5928.html) |
+| Speaker | For text-to-speech output | [any usb speaker](https://www.amazon.de/s?k=usb+speaker) |
+| Thermal Printer | For printing responses and information | [DFRobot Embedded Thermal Printer V2.0](https://www.dfrobot.com/product-1799.html) |
 | Display | For visual feedback and interface | [Placeholder] |
-| Microcontroller | For running the Kindroid software | [Placeholder] |
+| Microcontroller | For running the Kindroid software | [Raspberry Pi 5 (16GB)](https://www.raspberrypi.com/products/raspberry-pi-5/) or [Jetson Nano (>8GB)](https://developer.nvidia.com/embedded/jetson-nano) with [reComputer J101 Carrier Board](https://www.seeedstudio.com/reComputer-J101-v2-Carrier-Board-for-Jetson-Nano-p-5396.html) | 
+
 
 ## Usage
 
 As pipecat is hijacking the `SIGINT` signal from the terminal, pressing `CTRL + C` will only kill the pipecat pipeline, not the whole script. To exit out of the whole script (and get your terminal back), hit `CTRL + \`. Keep in mind that `CTRL + \` only works on most Unix-based systems (e.g., macOS, Ubuntu).
 
 ### Autostart on Boot
-The `setup_autostart_service.sh` script can be used to configure this project to start automatically when the system boots.
+The `setup_autostart_service.sh` script can be used to configure this project to start automatically when the system boots. **Before executing** the script, make sure to edit the file and replace the `REPLACE_WITH_ACTUAL_PATH` placeholder with the correct path.
 
 ## License
 This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0). See the [LICENSE](LICENSE) file for the full license text.
