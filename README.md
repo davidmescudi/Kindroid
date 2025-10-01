@@ -61,6 +61,32 @@ pip install picamera2 pyzbar numpy
 
 Make sure that a `.env` file with the correct `OPENAI_API_KEY = <your openai api key>` is present. For configuration purposes, e.g., which microphone, speaker, printer, and camera should be used, see the `config/agent_config.yaml`. Important: You also need to configure the correct `monkey_id` in `config/agent_config.yaml`, which the robot uses to communicate with the backend.
 
+## Running
+First, ensure the virtual environment you created during installation is active:
+```bash
+source kindroid/bin/activate
+```
+To run the main application, which requires an internet connection and all hardware components to be connected, execute the following command:
+```bash
+python main.py
+```
+
+### Stopping the Application
+As pipecat is hijacking the `SIGINT` signal from the terminal, pressing `CTRL + C` will only kill the pipecat pipeline, not the whole script. To exit out of the whole script (and get your terminal back), hit `CTRL + \`. Keep in mind that `CTRL + \` only works on most Unix-based systems (e.g., macOS, Ubuntu).
+
+### Test Mode (No Backend)
+For testing purposes, you can run the application in a mode that skips all API requests to the backend. This is useful for testing local functionality without the need for a running backend.
+```bash
+python main.py --test
+```
+### Running Without Hardware
+The application will crash if you run it without the required hardware (camera, printer) connected. To run the software for development without hardware, you must prevent the code from initializing these components.
+
+To do this, open `config/flow_config.py` and comment out the lines that import and call functions from `utils.printer` and `utils.camera`.
+
+### Autostart on Boot
+The `setup_autostart_service.sh` script can be used to configure this project to start automatically when the system boots. **Before executing** the script, make sure to edit the file and replace the `REPLACE_WITH_ACTUAL_PATH` placeholder with the correct path.
+
 ## Hardware Requirements
 
 | Component | Description | Recommended Model |
@@ -68,17 +94,10 @@ Make sure that a `.env` file with the correct `OPENAI_API_KEY = <your openai api
 | Camera | For QR code detection and visual interaction | [Raspberry Pi Camera Module 3](https://www.raspberrypi.com/products/camera-module-3/) |
 | Microphone | For speech recognition | [ReSpeaker Lite](https://www.seeedstudio.com/ReSpeaker-Lite-p-5928.html) |
 | Speaker | For text-to-speech output | [any usb speaker](https://www.amazon.de/s?k=usb+speaker) |
-| Thermal Printer | For printing responses and information | [DFRobot Embedded Thermal Printer V2.0](https://www.dfrobot.com/product-1799.html) |
+| Thermal Printer | For printing responses and information | [DFRobot DFR0503 Embedded Thermal Printer V2.0](https://www.dfrobot.com/product-1799.html) |
 | Display | For visual feedback and interface | [Placeholder] |
 | Microcontroller | For running the Kindroid software | [Raspberry Pi 5 (16GB)](https://www.raspberrypi.com/products/raspberry-pi-5/) or [Jetson Nano (>8GB)](https://developer.nvidia.com/embedded/jetson-nano) with [reComputer J101 Carrier Board](https://www.seeedstudio.com/reComputer-J101-v2-Carrier-Board-for-Jetson-Nano-p-5396.html) | 
 
-
-## Usage
-
-As pipecat is hijacking the `SIGINT` signal from the terminal, pressing `CTRL + C` will only kill the pipecat pipeline, not the whole script. To exit out of the whole script (and get your terminal back), hit `CTRL + \`. Keep in mind that `CTRL + \` only works on most Unix-based systems (e.g., macOS, Ubuntu).
-
-### Autostart on Boot
-The `setup_autostart_service.sh` script can be used to configure this project to start automatically when the system boots. **Before executing** the script, make sure to edit the file and replace the `REPLACE_WITH_ACTUAL_PATH` placeholder with the correct path.
 
 ## License
 This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0). See the [LICENSE](LICENSE) file for the full license text.
