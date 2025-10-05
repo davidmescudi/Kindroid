@@ -95,7 +95,7 @@ The `setup_autostart_service.sh` script can be used to configure this project to
 | Microphone | For speech recognition | [ReSpeaker Lite](https://www.seeedstudio.com/ReSpeaker-Lite-p-5928.html) |
 | Speaker | For text-to-speech output | [any usb speaker](https://www.amazon.de/s?k=usb+speaker) |
 | Thermal Printer | For printing responses and information | [DFRobot DFR0503 Embedded Thermal Printer V2.0](https://www.dfrobot.com/product-1799.html) |
-| Display | For visual feedback and interface | [Placeholder] |
+| Display | For visual feedback and interface | [Waveshare 3.5inch Resistive Touch Screen](https://www.waveshare.com/3.5inch-HDMI-LCD.htm) |
 | Microcontroller | For running the Kindroid software | [Raspberry Pi 5 (16GB)](https://www.raspberrypi.com/products/raspberry-pi-5/) or [Jetson Nano (>8GB)](https://developer.nvidia.com/embedded/jetson-nano) with [reComputer J101 Carrier Board](https://www.seeedstudio.com/reComputer-J101-v2-Carrier-Board-for-Jetson-Nano-p-5396.html) | 
 
 
