@@ -6,8 +6,7 @@ from loguru import logger
 from pipecat_flows import FlowArgs, FlowConfig, FlowResult
 import json
 
-from utils.printer import setup_printer, print_qr, feed_paper_lines, close_printer, print_text
-from utils.camera import _scan_qr_code_sync
+
 from utils.config_loader import AppConfig
 
 from animation.monkey_eyes_lib import EyesController
@@ -30,6 +29,10 @@ config_path = os.path.join(current_dir, "agent_config.yaml")
 app_config = AppConfig.load_from_yaml(config_path)
 
 def create_flow_config(journey_id: int, eyes_controller: EyesController, test: bool) -> FlowConfig:
+    if not test:
+        from utils.printer import setup_printer, print_qr, feed_paper_lines, close_printer, print_text
+        from utils.camera import _scan_qr_code_sync
+
     # Function handlers for the LLM
     async def get_way_description(args: FlowArgs) -> Union[WayDescriptionResult, ErrorResult]:
         """Handler for providing a way description."""
@@ -81,11 +84,12 @@ def create_flow_config(journey_id: int, eyes_controller: EyesController, test: b
             else:
                 description = f"Leider konnte ich keinen Ort namens '{destination}' finden. Bitte versuchen Sie es mit einem der folgenden Orte: " + ", ".join([loc['name'] for loc in locations]) + "."
             
-            setup_printer()
-            print_qr(json.dumps(qr_code_data))
-            print_text(description)
-            feed_paper_lines(15)
-            close_printer()
+            if not test:
+                setup_printer()
+                print_qr(json.dumps(qr_code_data))
+                print_text(description)
+                feed_paper_lines(15)
+                close_printer()
             eyes_controller.trigger_smile(2000)
             return WayDescriptionResult(description=description)
         except httpx.RequestError as e:
